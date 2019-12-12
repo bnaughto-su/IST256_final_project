@@ -1,0 +1,91 @@
+!pip install colorama
+!pip install python-cfonts
+import json
+import requests
+import numpy as np
+import warnings
+import csv
+from IPython.display import Image, display 
+from IPython.core.display import HTML
+from colorama import Fore, Back, Style
+from cfonts import render, say
+
+def recipe_maker():
+    filename = "Ingredients-master-list-user-input"
+    with open (filename, "w") as f:
+        while True:
+                user_ingredient = input("Enter an ingredient you have on hand, enter stop when done: ")
+                if user_ingredient == "stop":
+                    break
+                f.write(user_ingredient + ",")
+    with open (filename, "r") as f:
+        for line in f.readlines():  
+            ingredients = line
+            
+    params = { 'i' : ingredients }
+    response = requests.get("http://www.recipepuppy.com/api/?", params=params)
+    food_data = response.json()
+
+    #This chunk spits out a recipe you can answer yes or no to
+    outputted_recipe_data = response.json()
+    if outputted_recipe_data["results"]:
+        tittle_0 = outputted_recipe_data["results"][0]["title"] 
+        tittle_1 = outputted_recipe_data["results"][1]["title"] 
+        print("")
+        print(Back.YELLOW + "Congrats! You can make", str.rstrip(tittle_0))
+        print("")
+
+
+        recipe_website_0 = outputted_recipe_data["results"][0]["href"]
+        recipe_website_1 = outputted_recipe_data["results"][1]["href"]
+        needed_ingredients_0 = outputted_recipe_data["results"][0]["ingredients"]
+        needed_ingredients_1 = outputted_recipe_data["results"][1]["ingredients"]
+
+        user_choice = input("Type yes to see this recipe or type no to see something else to make [yes or no]: ")
+        if user_choice == "yes":
+            print("")
+            print(Back.YELLOW + f"Click here: {recipe_website_0} for step by step directions on how to make {str.rstrip(tittle_0)}")
+            print('')
+            print(f"The main ingredients you will need are: {str.rstrip(needed_ingredients_0)}")
+            print("")
+            outputted_recipe_data = response.json()
+            image = outputted_recipe_data["results"][0]["thumbnail"]
+            print("")
+            print('Here is what your meal will look like!:')
+
+
+        if user_choice == "no":
+            tittle_1 = outputted_recipe_data["results"][1]["title"]
+            print("")
+            print(f"Okay, you can also make {tittle_1}.")
+            print("")
+            print(f"Click here: {recipe_website_1} for step by step directions on how to make {str.rstrip(tittle_1)}")
+            print('')
+            print(f"The main ingredients you will need are: {str.rstrip(needed_ingredients_1)}")
+            print("")
+            outputted_recipe_data = response.json()
+            image = outputted_recipe_data["results"][1]["thumbnail"]
+            print('Here is what your meal will look like!:')
+        display(Image(url= image))
+    else:
+        print("Sorry there is no recipe with those ingredients. Maybe try adding different ones!")
+        
+        
+output1 = render('lets', colors=['red', 'yellow'], align='center')
+print(output1)
+output2 = render('make', colors=['red', 'yellow'], align='center')
+print(output2)
+output3 = render('food', colors=['red', 'yellow'], align='center')
+print(output3)
+print("In our program, you will be able to input ingredients you have, and get a recipe using them.")
+
+while True:
+    asking = input("Welcome to our program! Would you like to input a list of ingredients to generate a recipe? yes or no:")
+    print(asking)
+    if asking == "yes" or asking == "Yes" or asking == "y" or asking == "Y":
+        recipe_maker()
+    elif asking == 'no' or asking == "No" or asking == "n" or asking == "N":
+        print("Thank you, come back soon.")
+        break
+    else:
+        print("please enter yes or no")
