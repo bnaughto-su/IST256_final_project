@@ -1,0 +1,30 @@
+#def recipe_maker (): -global variable
+filename = "Ingredients-master-list-user-input"
+with open (filename, "w") as f:
+    while True:
+            user_ingredient = input("Enter an ingredient you have on hand, enter stop when done: ")
+            if user_ingredient == "stop":
+                break
+            f.write(user_ingredient + ",\n")
+with open (filename, "r") as f:
+     for line in f.readlines():
+        print(line)
+
+ params = { 'i' : ingredients }
+    response = requests.get("http://www.recipepuppy.com/api/?", params=params)
+    food_data = response.json()
+
+    #This chunk spits out a recipe you can answer yes or no to
+    outputted_recipe_data = response.json()
+    if outputted_recipe_data["results"]:
+        tittle_0 = outputted_recipe_data["results"][0]["title"] 
+        tittle_1 = outputted_recipe_data["results"][1]["title"] 
+        print("")
+        print(Back.YELLOW + "Congrats! You can make", str.rstrip(tittle_0))
+        print("")
+
+
+        recipe_website_0 = outputted_recipe_data["results"][0]["href"]
+        recipe_website_1 = outputted_recipe_data["results"][1]["href"]
+        needed_ingredients_0 = outputted_recipe_data["results"][0]["ingredients"]
+        needed_ingredients_1 = outputted_recipe_data["results"][1]["ingredients"]
