@@ -1,0 +1,91 @@
+import json
+import requests
+import pandas as pd
+import numpy as np
+import warnings
+import csv
+import matplotlib
+import matplotlib.pyplot as plt
+import plotly
+import folium
+from IPython.display import Image
+from IPython.core.display import HTML
+from IPython.display import display
+
+def recipe_maker():
+    filename = "Ingredients-master-list-user-input"
+    with open (filename, "w") as f:
+        while True:
+                user_ingredient = input("Enter an ingredient you have on hand, enter stop when done: ")
+                if user_ingredient == "stop":
+                    break
+                f.write(user_ingredient + ",") #append to list, #make list string. # used to be: f.write(user_ingredient + "\n")
+    with open (filename, "r") as f:
+         for line in f.readlines():
+            ingredients = line
+    params = { 'i' : ingredients }
+    response = requests.get("http://www.recipepuppy.com/api/", params=params)
+    food_data = response.json()
+    food_data
+
+    #This chunk spits out a recipe you can answer yes or no to
+    outputted_recipe_data = response.json()
+    tittle_0 = outputted_recipe_data["results"][0]["title"] #did type, this is a dictionary
+    tittle_1 = outputted_recipe_data["results"][1]["title"]
+    print(f"Congrats! You can make {tittle_0}")
+
+
+    outputted_recipe_data = response.json()
+    tittle_0 = outputted_recipe_data["results"][0]["title"] 
+    tittle_1 = outputted_recipe_data["results"][1]["title"]
+    recipe_website_0 = outputted_recipe_data["results"][0]["href"]
+    recipe_website_1 = outputted_recipe_data["results"][1]["href"]
+    needed_ingredients_0 = outputted_recipe_data["results"][0]["ingredients"]
+    needed_ingredients_1 = outputted_recipe_data["results"][0]["ingredients"]
+
+    #print(f"Congrats! You can make {tittle_0}.") #why wont this print first? #ok i just put it in cell above
+
+    user_choice = input("Type yes to see this recipe or type no to see something else to make[yes or no]: ")
+    #if not user_choice in ["yes", "no"]: #potentially delete this
+        #print("Follow the directions!") #potentially delete this
+    if user_choice == "yes":
+        print(f"Click here: {recipe_website_0} for step by step directions on how to make {tittle_0}")
+        print(f"The main ingredients you will need are: {needed_ingredients_0}")
+        outputted_recipe_data = response.json()
+        image = outputted_recipe_data["results"][0]["thumbnail"]
+        print('Here is what your meal will look like!:')
+    from IPython.display import Image
+    from IPython.core.display import HTML
+    #from IPython.display import display
+    Image(url= image)
+    #display(image)
+
+    if user_choice == "no":
+        tittle_1 = outputted_recipe_data["results"][1]["title"]
+        print(f"Okay, you can also make {tittle_1}.")
+        print(f"Click here: {recipe_website_1} for step by step directions on how to make {tittle_1}")
+        print(f"The main ingredients you will need are: {needed_ingredients_1}")
+        outputted_recipe_data = response.json()
+        image = outputted_recipe_data["results"][1]["thumbnail"]
+        print('Here is what your meal will look like!:')
+    from IPython.display import Image
+    from IPython.core.display import HTML
+    Image(url= image)
+    #display(image)
+
+    #if not user_choice in ["yes", "no"]:
+        #print("Follow the directions!")
+    #else:
+        #print("this is not valid, please type yes or no")
+        
+        
+        
+ while True:
+    asking = input("Welcome to our program! Would you like to input a list of ingredients to generate a recipe? yes or no:")
+    if asking == "yes" or "Yes" or "y" or "Y":
+        recipe_maker()
+    elif asking == 'no' or "No" or "n" or "N":
+        print("Thank you, come back soon.") #when i hit no it still prints "enter an ingredient"
+        break
+    else:
+        print("please enter yes or no")
